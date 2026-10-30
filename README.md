@@ -64,16 +64,18 @@ This project demonstrates a real‑world streaming data flow with integrity chec
 Create the target table in ClickHouse:
 
 ```sql
-CREATE TABLE IF NOT EXISTS telemetry_raw_data (
-    device_id      Int64,
-    seq_no         Int64,
-    timestamp      Int64,          -- Unix timestamp in seconds
-    sensor_type    String,
-    payload_hex    String,         -- Raw payload as HEX
-    crc            Int32,
-    parsed_value   Float64,        -- Structured value (temp, vib, press, status)
-    extra_info     String          -- Contextual info (e.g., "Vib-X", "ERR:123", "Press")
-) ENGINE = MergeTree()
+CREATE TABLE IF NOT EXISTS telemetry_raw_data
+(
+    device_id      UInt64,
+    seq_no         UInt64,
+    timestamp      DateTime64(3),
+    sensor_type    LowCardinality(String),R
+    payload_hex    String,
+    crc            UInt16,
+    parsed_value   Float64,
+    extra_info     String
+)
+ENGINE = MergeTree()
 ORDER BY (device_id, timestamp);
 ```
 ## 🚀 Launch via Script (Recommended for macOS)
@@ -88,7 +90,7 @@ The root directory contains `run-both.sh`, which:
 Run:
 
 ```bash
-chmod +x run-both.sh
+chmod u+x run-both.sh
 ./run-both.sh
 ```
 During execution, enter sensor configuration data in the console. The script manages the lifecycle of both processes.
